@@ -1,5 +1,10 @@
-from gcp_oauth_clients import __version__
-
-
-def test_version():
-    assert __version__ == '0.1.0'
+def test_import_api():
+    try:
+        from gcp_oauth_clients import (
+            GcpConfidentialClient,
+            GcpNativeClient,
+            GcpOauthClientException,
+            TokenResponse,
+        )
+    except ImportError:
+        raise
