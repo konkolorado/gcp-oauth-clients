@@ -1,4 +1,4 @@
-Class based OAuth2 Native Clients for Google Cloud Platform
+Class based OAuth2 Clients for Google Cloud Platform
 
 ## Installation
 
