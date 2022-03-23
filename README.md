@@ -27,8 +27,7 @@ gcpc = GcpNativeClient(
 
 # Begin a new login, supplying the desired scope or scopes
 with gcpc.new_login("openid"):
-    url = gcpc.authentication_url()
-    print(f"Please visit this url in a browser: {url}")
+    print(f"Please visit this url in a browser: {gcpc.authentication_url}")
     tokens = gcpc.exchange_authorization_code_for_tokens()
 
 # Use the tokens to access the GCP APIs
@@ -55,8 +54,7 @@ gcpc = GcpNativeClient(
 
 # Begin a new login, supplying the desired scope or scopes
 with gcpc.new_login("openid"):
-    url = gcpc.authentication_url()
-    print(f"Please visit this url in a browser: {url}")
+    print(f"Please visit this url in a browser: {gcpc.authentication_url}")
     code = input("Give code here: ")
     tokens = gcpc.exchange_authorization_code_for_tokens(code)
 
