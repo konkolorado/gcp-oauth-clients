@@ -28,7 +28,7 @@ class GcpNativeClient:
         """
         A class-based implementation for OAuth2 Native Apps on GCP. This allows
         Native apps (or clients) to run OAuth2 logins on behalf of a user to
-        perform operations on GCP.
+        access GCP APIs.
 
         For pre-requisites on creating a GCP client and secret, follow the
         instructions at the link below, taking care to set the application type
@@ -75,10 +75,8 @@ class GcpNativeClient:
         server.run()
         return server
 
-    def get_authentication_url(self) -> str:
-        """
-        https://developers.google.com/identity/protocols/oauth2/native-app#step-2:-send-a-request-to-googles-oauth-2.0-server
-        """
+    @property
+    def authentication_url(self) -> str:
         if (
             self.code_challenge is None
             or self.redirect_uri is None
@@ -131,7 +129,9 @@ class GcpNativeClient:
         try:
             resp.raise_for_status()
         except requests.HTTPError:
-            logger.debug("Exchanging authorization code for tokens failed", extra={})
+            logger.debug(
+                "Exchanging authorization code for tokens failed", exc_info=True
+            )
             raise GcpOauthClientException("Failed to exchange code for tokens")
         else:
             logger.debug("Exchanged authorization code for tokens")
