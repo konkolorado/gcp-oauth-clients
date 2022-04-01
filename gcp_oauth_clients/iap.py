@@ -35,10 +35,10 @@ class IapServiceAccountClient:
         with open(key_file) as infile:
             try:
                 key_dict = json.load(infile)
-            except json.JSONDecodeError:
+            except json.JSONDecodeError as e:
                 raise GcpOauthClientException(
                     "The provided key file is not in JSON format"
-                )
+                ) from e
         try:
             return cls(
                 client_id=key_dict["client_id"],
@@ -55,7 +55,7 @@ class IapServiceAccountClient:
     def headers(self) -> dict[str, str]:
         return {"alg": "RS256", "typ": "JWT", "kid": self.private_key}
 
-    def create_assertions(self, claims: dict) -> str:
+    def create_assertion(self, claims: dict) -> str:
         return jwt.encode(
             claims, self.private_key, algorithm="RS256", headers=self.headers
         )
@@ -78,7 +78,7 @@ class IapServiceAccountClient:
             self.tokens_url,
             data={
                 "grant_type": "urn:ietf:params:oauth:grant-type:jwt-bearer",
-                "assertions": self.create_assertions(payload),
+                "assertion": self.create_assertion(payload),
             },
         )
         try:
