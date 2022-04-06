@@ -29,10 +29,14 @@ class LocalHandler(socketserver.StreamRequestHandler):
         qargs = urllib_parse.urlsplit(path).query
         qargs_dict = dict(urllib_parse.parse_qsl(qargs))
         code, state = qargs_dict.get("code"), qargs_dict.get("state")
-        if code is None or state is None:
+        if code is None:
             error = qargs_dict.get("error")
             logger.debug(f"Request missing code parameter, got {error=}")
-            code, state = error, ""
+            code = ""
+        if state is None:
+            error = qargs_dict.get("error")
+            logger.debug(f"Request missing state parameter, got {error=}")
+            state = ""
 
         self.wfile.write("HTTP/1.1 200 OK\n".encode("utf-8"))
         self.wfile.write("'Content-Type: text/html\n'".encode("utf-8"))
