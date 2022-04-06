@@ -1,7 +1,9 @@
+import json
 import logging
 import time
 import typing as t
 from contextlib import contextmanager
+from pathlib import Path
 
 import requests
 from jose import jwt
@@ -32,6 +34,28 @@ class GcpConfidentialClient:
         self.client_id = client_id
         self.client_secret = client_secret
         self.scopes: t.Optional[tuple[str, ...]] = None
+
+    @classmethod
+    def from_service_account_json(cls, key_file: str) -> "GcpConfidentialClient":
+        if not Path(key_file).exists():
+            raise GcpOauthClientException("The provided key file does not exist")
+
+        with open(key_file) as infile:
+            try:
+                key_dict = json.load(infile)
+            except json.JSONDecodeError as e:
+                raise GcpOauthClientException(
+                    "The provided key file is not in JSON format"
+                ) from e
+        try:
+            return cls(
+                client_id=key_dict["client_email"],
+                client_secret=key_dict["private_key"],
+            )
+        except KeyError as e:
+            raise GcpOauthClientException(
+                "The provided key file does not contain the expected key(s)"
+            ) from e
 
     @property
     def jwt_header(self) -> dict[str, str]:
