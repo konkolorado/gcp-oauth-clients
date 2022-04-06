@@ -69,11 +69,19 @@ print(r.status_code, r.json())
 ## 2 legged OAuth2 / Confidential Clients
 
 A Confidential Client class is provided to facilitate server-to-server
-communication via a service account. Use this method for non-interactive applications:
+communication via a service account. Use this method for non-interactive
+applications. There are two ways to create this client.
 
+1. From a service account json file downloaded from GCP:
 ```python
-import requests
+from gcp_oauth_clients import GcpConfidentialClient
 
+# Instantiate a new client
+gcpcc = GcpConfidentialClient.from_service_account_json("/path/to/file")
+```
+
+2. From the service account email and private key directly:
+```python
 from gcp_oauth_clients import GcpConfidentialClient
 
 # Instantiate a new client
@@ -81,6 +89,11 @@ gcpcc = GcpConfidentialClient(
     "service-account-name@ogcp-project.iam.gserviceaccount.com",
     "-----BEGIN PRIVATE ...-----END PRIVATE KEY-----\n",
 )
+```
+
+Then, to use it:
+```python
+import requests
 
 # Begin a new login, supplying the desired scope or scopes
 with gcpcc.new_login("https://www.googleapis.com/auth/drive"):
@@ -148,10 +161,12 @@ import requests
 from gcp_oauth_clients import IapServiceAccountClient
 
 # Instantiate a new client using an OAuth client with IAP access
-iapsc = IapServiceAccountClient.from_key_file("/path/to/keyfile.json")
+iapsc = IapServiceAccountClient.from_service_account_json(
+    "/path/to/keyfile.json"
+)
 
 # Request an OIDC token for the IAP-secured resource's OAuth client
-oidc_tokens = iapnc.oidc_token_for_iap_client(
+oidc_tokens = iapsc.oidc_token_for_iap_client(
     "iap-secured-resources-oauth-client_id",
 )
 
