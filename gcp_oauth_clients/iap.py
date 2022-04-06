@@ -33,7 +33,7 @@ class IapServiceAccountClient:
         self.private_key = private_key
 
     @classmethod
-    def from_key_file(cls, key_file: str) -> "IapServiceAccountClient":
+    def from_service_account_json(cls, key_file: str) -> "IapServiceAccountClient":
         if not Path(key_file).exists():
             raise GcpOauthClientException("The provided key file does not exist")
 

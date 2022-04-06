@@ -38,10 +38,15 @@ class LocalHandler(socketserver.StreamRequestHandler):
             logger.debug(f"Request missing state parameter, got {error=}")
             state = ""
 
-        self.wfile.write("HTTP/1.1 200 OK\n".encode("utf-8"))
-        self.wfile.write("'Content-Type: text/html\n'".encode("utf-8"))
         self.wfile.write(
-            """<html><body>You may now close this tab.</body></html>""".encode("utf-8")
+            """HTTP/1.1 200 OK
+            Content-Type: text/html
+
+
+            <html><body>You may now close this tab.</body></html>
+            """.encode(
+                "utf-8"
+            )
         )
         self.result.put_nowait(Result(code=code, state=state))
 
@@ -67,9 +72,10 @@ class LocalServer:
         )
 
     def get_result_blocking(self) -> Result:
-        logger.debug(f"Blocking until LocalServer results available")
-        return LocalHandler.result.get(block=True)
+        logger.debug("Blocking until LocalServer result available")
+        result = LocalHandler.result.get(block=True)
+        logger.debug(f"LocalServer received result: {result}")
+        return result
 
     def shutdown(self):
         logger.debug("Shutting down LocalServer")
-        self.server_thread.join()
