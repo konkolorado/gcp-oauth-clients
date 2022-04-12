@@ -65,7 +65,7 @@ class IapServiceAccountClient:
             claims, self.private_key, algorithm="RS256", headers=self.headers
         )
 
-    def oidc_token_for_iap_client(self, iap_client_id: str) -> TokenResponse:
+    def oidc_token_for_iap_client(self, iap_client_id: str) -> str:
         """
         Generates an OIDC token for use against a resource secured by the IAP
         client id provided
@@ -93,7 +93,7 @@ class IapServiceAccountClient:
             raise GcpOauthClientException("Failed to obtain OIDC token")
         else:
             logger.debug("Obtained OIDC token")
-            return TokenResponse(**resp.json())
+            return resp.json()["id_token"]
 
 
 class IapNativeClient(GcpNativeClient):
@@ -157,9 +157,7 @@ class IapNativeClient(GcpNativeClient):
             self.redirect_uri = None
             self.server = None
 
-    def oidc_token_for_iap_client(
-        self, refresh_token: str, iap_client_id: str
-    ) -> TokenResponse:
+    def oidc_token_for_iap_client(self, refresh_token: str, iap_client_id: str) -> str:
         """
         Generates an OIDC token for use against a resource secured by the IAP
         client id provided
@@ -181,6 +179,6 @@ class IapNativeClient(GcpNativeClient):
             raise GcpOauthClientException("Failed to exchange code for tokens")
         else:
             logger.debug("Exchanged authorization code for tokens")
-            return TokenResponse(**resp.json())
+            return resp.json()["id_token"]
 
 
